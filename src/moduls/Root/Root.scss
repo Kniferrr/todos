@@ -1,0 +1,16 @@
+.root {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  transition: background-color 0.3s ease-in-out;
+  background-color: #575656;
+
+  .child-element {
+    color: #333;
+    font-size: 16px;
+  }
+}

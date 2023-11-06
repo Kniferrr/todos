@@ -24,18 +24,20 @@ export const addNewUserTask = (
     .post(`${baseUrl}/tasks/${username}`, { task: `${task}`, completed: false })
     .then((response) => {
       queryClient.invalidateQueries("tasks");
-      console.log(response.data);
     })
     .catch((error) => {
       console.error("Ошибка:", error.response.data.error);
     });
 };
 
-export const getUserTask = (user: string): Promise<TaskInterface[]> => {
+export const getUserTask = (
+  user: string,
+  addAllTask: (task: TaskInterface[]) => void
+): Promise<TaskInterface[]> => {
   return axios
     .get(`${baseUrl}/tasks/${user}`)
     .then((response) => {
-      console.log(response.data);
+      addAllTask(response.data);
       return response.data;
     })
     .catch((error) => {

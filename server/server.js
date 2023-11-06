@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express();
 const port = 3000;
-
-const tasks = {};
+const dataModule = require("./data");
+const tasks = dataModule.readData();
 let countIndex = 0;
 
 app.use(express.json());
@@ -30,7 +30,6 @@ app.post("/user", (req, res) => {
   }
 });
 
-// Маршрут для добавления задачи
 app.post("/tasks/:username", (req, res) => {
   const username = req.params.username;
   const task = req.body.task;
@@ -75,34 +74,43 @@ app.delete("/tasks/:username", (req, res) => {
 app.patch("/tasks/:username", (req, res) => {
   const username = req.params.username;
   const taskIndex = req.body.taskIndex;
-  if (!username || taskIndex === undefined) {
+  const trueTaskIndex = tasks[username].findIndex(
+    (task) => task.index === taskIndex
+  );
+  if (!username || trueTaskIndex === undefined) {
     res.status(400).json({ error: "Неверный формат запроса" });
   } else {
     if (!tasks[username]) {
       res.status(404).json({ error: "Пользователь не найден" });
-    } else if (taskIndex < 0) {
+    } else if (trueTaskIndex < 0) {
       res.status(404).json({ error: "Задача не найдена" });
-    } else if (tasks[username][taskIndex].completed !== true) {
-      const indexToComplite = tasks[username].findIndex(
-        (task) => task.index === taskIndex
-      );
-      if (indexToComplite !== -1) {
-        tasks[username][indexToComplite].completed = true;
+    } else if (tasks[username][trueTaskIndex].completed !== true) {
+      if (trueTaskIndex !== -1) {
+        tasks[username][trueTaskIndex].completed = true;
       }
       res.status(200).json({ message: "Задача отмечена как выполненная" });
-    } else if (tasks[username][taskIndex].completed !== false) {
-      const indexToDeComplite = tasks[username].findIndex(
-        (task) => task.index === taskIndex
-      );
-      if (indexToDeComplite !== -1) {
-        tasks[username][indexToDeComplite].completed = false;
+    } else if (tasks[username][trueTaskIndex].completed !== false) {
+      if (trueTaskIndex !== -1) {
+        tasks[username][trueTaskIndex].completed = false;
       }
-
       res.status(200).json({ message: "Задача отмечена как не выполненная" });
     }
   }
 });
 
+function saveDataToFile() {
+  dataModule.saveData(tasks);
+}
+
 app.listen(port, () => {
   console.log(`Сервер запущен на порту ${port}`);
+});
+
+process.on("exit", () => {
+  saveDataToFile();
+});
+
+process.on("SIGINT", () => {
+  saveDataToFile();
+  process.exit();
 });

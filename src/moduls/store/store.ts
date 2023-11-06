@@ -10,7 +10,6 @@ const getInitialStateFromLocalStorage = () => {
 const initialState: TaskState = {
   tasks: [],
   error: "",
-  completeTasks: [],
   tasksSotrMod: "All",
   login: "",
 };
@@ -19,35 +18,24 @@ const useTaskStore = create<TaskStateActions>()(
   immer((set) => ({
     ...initialState,
     ...getInitialStateFromLocalStorage(),
-    setTask: (task) =>
+    addAllTask: (task) =>
       set((state) => {
-        if (!state.tasks.includes(task)) {
-          state.error = "";
-          state.tasks = [...state.tasks, task];
-          localStorage.setItem("taskState", JSON.stringify(state));
-        } else {
-          state.error = "Such a task already exists";
-        }
+        state.error = "";
+        state.tasks = task;
+        localStorage.setItem("taskState", JSON.stringify(state));
+      }),
+    addTask: (task) =>
+      set((state) => {
+        state.error = "";
+        state.tasks = [...state.tasks, task];
+        localStorage.setItem("taskState", JSON.stringify(state));
       }),
     deleteTask: (taskToDelete) =>
       set((state) => {
         const newTasksList = state.tasks.filter(
-          (task) => task !== taskToDelete
+          (task) => task.task !== taskToDelete
         );
         state.tasks = newTasksList;
-        localStorage.setItem("taskState", JSON.stringify(state));
-      }),
-    completeTask: (taskToComplete) =>
-      set((state) => {
-        const isTaskCompleted = state.completeTasks.includes(taskToComplete);
-        if (isTaskCompleted) {
-          const newCompleteTasks = state.completeTasks.filter(
-            (task) => task !== taskToComplete
-          );
-          state.completeTasks = newCompleteTasks;
-        } else {
-          state.completeTasks = [...state.completeTasks, taskToComplete];
-        }
         localStorage.setItem("taskState", JSON.stringify(state));
       }),
     setTasksSotrMod: (newTasksSotrMod) =>

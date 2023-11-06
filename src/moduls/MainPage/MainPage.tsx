@@ -1,28 +1,44 @@
 import "./MainPage.scss"; // Подключаем файл стилей
 import useTaskStore from "../store/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskList from "../TaskList/TaskList";
+import { useNavigate } from "react-router-dom";
+import { addNewUserTask } from "../../fetch/todoFetch";
+import { useQueryClient } from "react-query";
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const [newTask, setNewTask] = useState("");
-  const setTask = useTaskStore((state) => state.setTask);
-  const error = useTaskStore((state) => state.error);
-  const setTasksSotrMod = useTaskStore((state) => state.setTasksSotrMod);
-  const tasksSotrMod = useTaskStore((state) => state.tasksSotrMod);
+  const queryClient = useQueryClient();
+  const { error, setTasksSotrMod, tasksSotrMod, login } = useTaskStore();
+
+  useEffect(() => {
+    if (login.length < 1) {
+      navigate("/login");
+    }
+  });
 
   const handleInputChange = (event: { target: { value: string } }) => {
     setNewTask(event.target.value);
   };
-  const onSetTask = () => {
-    setTask(newTask);
-    setNewTask("");
-  };
-  const onSettasksSotrMod = (mod: string) => {
-    setTasksSotrMod(mod);
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      onSetTask();
+    }
   };
 
-  const activeButtonSotr = (mod: string) => {
-    return tasksSotrMod == mod ? "tab-button active" : "tab-button";
+  const onSetTask = async () => {
+    addNewUserTask(newTask, login, queryClient);
+    setNewTask("");
+  };
+
+  const onSettasksSotrMod = (tasksSotrMod: string) => {
+    setTasksSotrMod(tasksSotrMod);
+  };
+
+  const activeButtonSotr = (sotrMod: string) => {
+    return tasksSotrMod == sotrMod ? "tab-button active" : "tab-button";
   };
 
   return (
@@ -34,6 +50,7 @@ const MainPage = () => {
           placeholder="Add a new task"
           value={newTask}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
         />
         <button id="add-button" onClick={onSetTask}>
           Add

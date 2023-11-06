@@ -12,6 +12,7 @@ const initialState: TaskState = {
   error: "",
   completeTasks: [],
   tasksSotrMod: "All",
+  login: "",
 };
 
 const useTaskStore = create<TaskStateActions>()(
@@ -52,6 +53,11 @@ const useTaskStore = create<TaskStateActions>()(
     setTasksSotrMod: (newTasksSotrMod) =>
       set((state) => {
         state.tasksSotrMod = newTasksSotrMod;
+        localStorage.setItem("taskState", JSON.stringify(state));
+      }),
+    setLogin: (login: string) =>
+      set((state) => {
+        state.login = login;
         localStorage.setItem("taskState", JSON.stringify(state));
       }),
   }))

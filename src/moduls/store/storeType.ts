@@ -3,6 +3,7 @@ export interface TaskState {
   error: string;
   completeTasks: string[];
   tasksSotrMod: string;
+  login: string;
 }
 
 export interface TaskStateActions extends TaskState {
@@ -10,4 +11,5 @@ export interface TaskStateActions extends TaskState {
   deleteTask: (taskToDelete: string) => void;
   completeTask: (taskToComplete: string) => void;
   setTasksSotrMod: (newTasksSotrMod: string) => void;
+  setLogin: (login: string) => void;
 }

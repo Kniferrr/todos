@@ -3,8 +3,7 @@ import { TaskInterface } from "../types/typesFetch";
 
 const baseUrl = "http://localhost:3000";
 
-const createNewUser = (login: string) => {
-  console.log("Создание пользователя начато");
+export const createNewUser = (login: string) => {
   axios
     .post(`${baseUrl}/user`, { username: `${login}` })
     .then((response) => {
@@ -12,29 +11,27 @@ const createNewUser = (login: string) => {
     })
     .catch((error) => {
       console.error("Ошибка при создании пользователя:", error);
-      if (error.response) {
-        console.error("Ответ сервера:", error.response.data);
-      }
-    })
-    .finally(() => {
-      console.log("Создание пользователя завершено");
     });
 };
 
-export const getUserTask = async (
+export const getUserTask = (
   login: string,
   addAllTask: (task: TaskInterface[]) => void
 ) => {
-  try {
-    const response = await axios.get(`${baseUrl}/tasks/${login}`);
-    if (response.status === 200) {
-      console.log("Информация Обновлена с севером");
-      addAllTask(response.data);
-      return response.data;
-    } else if (response.status === 404) {
-      createNewUser(login);
-    }
-  } catch (error) {}
+  return axios
+    .get(`${baseUrl}/tasks/${login}`)
+    .then((response) => {
+      if (response.status === 200) {
+        console.log("Информация Обновлена с сервером");
+        addAllTask(response.data);
+        return response.data;
+      }
+    })
+    .catch((error) => {
+      if (error.response && error.response.status === 404) {
+        createNewUser(login);
+      }
+    });
 };
 
 export const addNewUserTask = async (
@@ -52,12 +49,11 @@ export const addNewUserTask = async (
 
     console.log("Успешное добавление:", taskCreationResponse.data);
   } catch (error: any) {
+    setNetworkError(true);
     if (error.response && error.response.status === 404) {
       createNewUser(login);
-    } else {
-      setNetworkError(true);
-      console.error("Ошибка при добавлении задачи:", error);
     }
+    console.error("Ошибка при добавлении задачи:", error);
   }
 };
 

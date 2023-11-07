@@ -1,5 +1,6 @@
 import {
   addNewUserTask,
+  createNewUser,
   deleteUserTask,
   patchCompleteUserTask,
 } from "../fetch/todoFetch";
@@ -40,6 +41,7 @@ export const doErrorFetchQueue = (
       );
     } else {
       console.error(`Неизвестная функция fetch: ${fetchFunction}`);
+      createNewUser(login);
     }
   }
 };

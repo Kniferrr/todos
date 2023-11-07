@@ -3,7 +3,6 @@ const app = express();
 const port = 3000;
 const dataModule = require("./data");
 const tasks = dataModule.readData();
-let countIndex = 0;
 
 app.use(express.json());
 
@@ -32,18 +31,29 @@ app.post("/user", (req, res) => {
 
 app.post("/tasks/:username", (req, res) => {
   const username = req.params.username;
-  const task = req.body.task;
-  if (!username || !task) {
+  const Newtasks = req.body;
+  if (!username || !Newtasks) {
     res.status(400).json({ error: "Неверный формат запроса" });
   } else {
     if (!tasks[username]) {
       res.status(404).json({ error: "Пользователь не найден" });
     } else {
-      tasks[username].push({
-        task,
-        completed: false,
-        index: countIndex++,
-      });
+      tasks[username] = Newtasks;
+      res.status(201).json({ message: "Задача добавлена" });
+    }
+  }
+});
+
+app.post("/task/:username", (req, res) => {
+  const username = req.params.username;
+  const Newtasks = req.body;
+  if (!username || !Newtasks) {
+    res.status(400).json({ error: "Неверный формат запроса" });
+  } else {
+    if (!tasks[username]) {
+      res.status(404).json({ error: "Пользователь не найден" });
+    } else {
+      tasks[username].push(Newtasks);
       res.status(201).json({ message: "Задача добавлена" });
     }
   }

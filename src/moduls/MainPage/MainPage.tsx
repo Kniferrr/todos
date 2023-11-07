@@ -1,44 +1,54 @@
-import "./MainPage.scss"; // Подключаем файл стилей
-import useTaskStore from "../store/store";
 import { useEffect, useState } from "react";
-import TaskList from "../TaskList/TaskList";
 import { useNavigate } from "react-router-dom";
-import { addNewUserTask } from "../../fetch/todoFetch";
-import { useQueryClient } from "react-query";
+import useTaskStore from "../store/store";
+import { doErrorFetchQueue, onAddTask } from "../../Helpers/FetchHelper";
+import TaskList from "../TaskList/TaskList";
+import "./MainPage.scss";
 
 const MainPage = () => {
   const navigate = useNavigate();
   const [newTask, setNewTask] = useState("");
-  const queryClient = useQueryClient();
-  const { error, setTasksSotrMod, tasksSotrMod, login } = useTaskStore();
+
+  const {
+    error,
+    setTasksSotrMod,
+    tasksSotrMod,
+    login,
+    addTask,
+    addErrorFetchQueue,
+    deleteErrorFetchQueue,
+    errorFetchQueue,
+    setNetworkError,
+  } = useTaskStore();
 
   useEffect(() => {
     if (login.length < 1) {
       navigate("/login");
     }
-  });
+  }, []);
 
-  const handleInputChange = (event: { target: { value: string } }) => {
-    setNewTask(event.target.value);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      onSetTask();
+  useEffect(() => {
+    if (errorFetchQueue.length === 0) {
+      setNetworkError(false);
     }
+    doErrorFetchQueue(
+      login,
+      errorFetchQueue,
+      deleteErrorFetchQueue,
+      setNetworkError
+    );
+  }, [errorFetchQueue]);
+
+  const handleAddTask = () => {
+    onAddTask(newTask, setNewTask, addErrorFetchQueue, addTask);
   };
 
-  const onSetTask = async () => {
-    addNewUserTask(newTask, login, queryClient);
-    setNewTask("");
+  const onSetTasksSortMod = (sortMod: string) => {
+    setTasksSotrMod(sortMod);
   };
 
-  const onSettasksSotrMod = (tasksSotrMod: string) => {
-    setTasksSotrMod(tasksSotrMod);
-  };
-
-  const activeButtonSotr = (sotrMod: string) => {
-    return tasksSotrMod == sotrMod ? "tab-button active" : "tab-button";
+  const isActiveButtonSort = (sortMod: string) => {
+    return tasksSotrMod === sortMod ? "tab-button active" : "tab-button";
   };
 
   return (
@@ -49,30 +59,34 @@ const MainPage = () => {
           type="text"
           placeholder="Add a new task"
           value={newTask}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
+          onChange={(event) => setNewTask(event.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleAddTask();
+            }
+          }}
         />
-        <button id="add-button" onClick={onSetTask}>
+        <button id="add-button" onClick={handleAddTask}>
           Add
         </button>
       </div>
       <div className="error-output">{error}</div>
       <div className="tabs">
         <button
-          className={activeButtonSotr("All")}
-          onClick={() => onSettasksSotrMod("All")}
+          className={isActiveButtonSort("all")}
+          onClick={() => onSetTasksSortMod("all")}
         >
           All Tasks
         </button>
         <button
-          className={activeButtonSotr("complited")}
-          onClick={() => onSettasksSotrMod("complited")}
+          className={isActiveButtonSort("completed")}
+          onClick={() => onSetTasksSortMod("completed")}
         >
           Completed
         </button>
         <button
-          className={activeButtonSotr("InComplited")}
-          onClick={() => onSettasksSotrMod("InComplited")}
+          className={isActiveButtonSort("incomplete")}
+          onClick={() => onSetTasksSortMod("incomplete")}
         >
           Incomplete
         </button>

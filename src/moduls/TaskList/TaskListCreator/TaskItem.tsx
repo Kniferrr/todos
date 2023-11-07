@@ -1,40 +1,37 @@
-import { useQueryClient } from "react-query";
-import {
-  deleteUserTask,
-  patchCompliteUserTask,
-} from "../../../fetch/todoFetch";
+import { onCompliteTask, onDeleteTask } from "../../../Helpers/FetchHelper";
 import { TaskInterface } from "../../../types/typesFetch";
 import useTaskStore from "../../store/store";
 import "./TaskItem.scss";
 
 const TaskItem = ({ taskInfo }: { taskInfo: TaskInterface }) => {
-  const queryClient = useQueryClient();
-  const { tasksSotrMod, login } = useTaskStore();
-
-  const onDeleteTask = (task: TaskInterface) => {
-    deleteUserTask(task.index, login, queryClient);
-  };
-
-  const onCompliteTask = () => {
-    patchCompliteUserTask(taskInfo.index, login, queryClient);
-  };
+  const { tasksSotrMod, deleteTask, setComplitedTask, addErrorFetchQueue } =
+    useTaskStore();
 
   const compliteTaskClass = taskInfo.completed === true ? "complite-task" : "";
 
   let TaskItemComponen = (
     <li>
-      <button onClick={() => onDeleteTask(taskInfo)}>Del</button>
-      <span className={compliteTaskClass} onClick={() => onCompliteTask()}>
+      <button
+        onClick={() => onDeleteTask(taskInfo, addErrorFetchQueue, deleteTask)}
+      >
+        Del
+      </button>
+      <span
+        className={compliteTaskClass}
+        onClick={() =>
+          onCompliteTask(taskInfo, addErrorFetchQueue, setComplitedTask)
+        }
+      >
         {taskInfo.task}
       </span>
     </li>
   );
 
-  if (tasksSotrMod === "complited" && taskInfo.completed === false) {
+  if (tasksSotrMod === "completed" && taskInfo.completed === false) {
     TaskItemComponen = <></>;
   }
 
-  if (tasksSotrMod === "InComplited" && taskInfo.completed === true) {
+  if (tasksSotrMod === "incomplete" && taskInfo.completed === true) {
     TaskItemComponen = <></>;
   }
 

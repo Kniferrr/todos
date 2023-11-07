@@ -1,36 +1,32 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useTaskStore from "../moduls/store/store";
 import "./LoginPage.scss";
-import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("");
-
   const { setLogin, login } = useTaskStore();
 
-  useEffect(() => {
-    if (login.length > 0) {
-      navigate("/");
-    }
-  }, [login]);
-
-  const handleInputChange = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
   };
 
-  const handleEnterPress = (e: { key: string }) => {
+  const handleEnterPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       onSubmit();
     }
   };
 
   const onSubmit = () => {
-    console.log(`Entered nickname: ${nickname}`);
     setLogin(nickname);
   };
+
+  useEffect(() => {
+    if (login.length > 0) {
+      navigate("/");
+    }
+  }, [login, navigate]);
 
   return (
     <div className="login-page-container">

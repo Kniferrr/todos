@@ -1,5 +1,10 @@
 export interface TaskInterface {
   task: string;
   completed: boolean;
-  index: number;
+  index: string;
+}
+
+export interface errorFetchInterface {
+  fetchFunction: string;
+  taskinfo: TaskInterface;
 }

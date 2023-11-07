@@ -52,7 +52,7 @@ export const addNewUserTask = async (
 
     console.log("Успешное добавление:", taskCreationResponse.data);
   } catch (error: any) {
-    if (error.response.status === 404) {
+    if (error.response && error.response.status === 404) {
       createNewUser(login);
     } else {
       setNetworkError(true);

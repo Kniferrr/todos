@@ -1,8 +1,8 @@
 import "./Root.scss";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import MainPage from "../MainPage/MainPage";
+import MainPage from "./MainPage/MainPage";
 import { QueryClient, QueryClientProvider } from "react-query";
-import LoginPage from "../../LoginPage/LoginPage";
+import LoginPage from "./LoginPage/LoginPage";
 
 const queryClient = new QueryClient();
 

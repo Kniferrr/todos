@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useTaskStore from "../moduls/store/store";
 import "./LoginPage.scss";
+import useTaskStore from "../store/store";
 
 function LoginPage() {
   const navigate = useNavigate();

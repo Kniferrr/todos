@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { getUserTask } from "../../fetch/todoFetch";
 import useTaskStore from "../store/store";
 import TaskItem from "./TaskListCreator/TaskItem";
-import LoadingComponent from "../LoadingComponent/LoadingComponent";
 import { TaskInterface } from "../../types/typesFetch";
 
 const TaskList = () => {
@@ -13,10 +12,6 @@ const TaskList = () => {
       getUserTask(login, addAllTask);
     }
   }, [networkError]);
-
-  if (!Array.isArray(tasks)) {
-    return <LoadingComponent />;
-  }
 
   return (
     <div className="task-list-container">
